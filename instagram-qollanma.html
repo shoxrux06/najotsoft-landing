@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Instagram ulash qo'llanmasi — NajotSoft CRM</title>
+<meta name="description" content="Instagram Direct'ni NajotSoft CRM paneliga ulashda uchraydigan xatolar va ularning yechimi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; symptom index on top, then setup checklist, problem cards with a filter, commands. */
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #eef0f8;
+  --fg: #1b1d2a;
+  --muted: #5d6178;
+  --line: #dde0ec;
+  --accent: #4f46e5;
+  --accent-soft: #e7e6fd;
+  --ok: #157f4a;
+  --ok-soft: #dff3e8;
+  --warn: #9a5b00;
+  --warn-soft: #fbefd9;
+  --info: #1d5fa8;
+  --info-soft: #e0ecf9;
+  --code-bg: #f0f1f7;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12131b; --surface: #1a1c27; --surface-2: #222537; --fg: #e8e9f2; --muted: #a0a4bd;
+    --line: #2e3247; --accent: #a5a0ff; --accent-soft: #2b2a55; --ok: #6fd3a0; --ok-soft: #173426;
+    --warn: #f0b860; --warn-soft: #3a2c12; --info: #8cbcf2; --info-soft: #172b42; --code-bg: #232637;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12131b; --surface: #1a1c27; --surface-2: #222537; --fg: #e8e9f2; --muted: #a0a4bd;
+  --line: #2e3247; --accent: #a5a0ff; --accent-soft: #2b2a55; --ok: #6fd3a0; --ok-soft: #173426;
+  --warn: #f0b860; --warn-soft: #3a2c12; --info: #8cbcf2; --info-soft: #172b42; --code-bg: #232637;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 40px 80px; display: flex; flex-direction: column; gap: 48px; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; text-wrap: balance; margin: 0; }
+h1 { font-size: 2.1rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.45rem; }
+h3 { font-size: 1.08rem; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+code, kbd { font-family: var(--font-mono); font-size: 0.86em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.eyebrow { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.lead { color: var(--muted); max-width: 68ch; }
+header.top { display: flex; flex-direction: column; gap: 12px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fact { font-size: 0.82rem; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; color: var(--muted); }
+.fact b { color: var(--fg); font-weight: 600; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.section-head { display: flex; flex-direction: column; gap: 6px; }
+
+/* Symptom index */
+.index { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.index th, .index td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.index th { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--surface-2); }
+.index tr:last-child td { border-bottom: 0; }
+.index td:first-child { min-width: 260px; }
+
+/* Diagram */
+.diagram { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; }
+.mermaid { margin: 0; background: transparent; font-family: var(--font-body); }
+.flow-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.flow-notes > div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.flow-notes p { color: var(--muted); font-size: 0.92rem; }
+
+/* Checklist */
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; counter-reset: step; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; grid-template-columns: 26px 1fr; gap: 4px 12px; counter-increment: step; }
+.step input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent); cursor: pointer; }
+.step .body { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.step .body h3::before { content: counter(step) ". "; color: var(--accent); }
+.step.done { opacity: 0.6; }
+.step.done h3 { text-decoration: line-through; text-decoration-color: var(--muted); }
+.step p, .step li { color: var(--muted); font-size: 0.93rem; }
+.step ul { margin: 0; padding-left: 18px; }
+.checklist-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; justify-content: space-between; }
+.progress { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* Badges */
+.badge { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+.b-code { background: var(--ok-soft); color: var(--ok); }
+.b-setting { background: var(--info-soft); color: var(--info); }
+.b-limit { background: var(--warn-soft); color: var(--warn); }
+.b-untested { background: var(--warn-soft); color: var(--warn); }
+.b-tested { background: var(--ok-soft); color: var(--ok); }
+
+/* Problem cards */
+.filter-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filter-row input[type="search"] { flex: 1 1 260px; min-width: 0; font: inherit; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.chip { font: inherit; font-size: 0.85rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.cards { display: flex; flex-direction: column; gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; scroll-margin-top: 16px; }
+.card-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; justify-content: space-between; }
+.card-head h3 { flex: 1 1 320px; min-width: 0; }
+.quote { font-family: var(--font-mono); font-size: 0.84rem; background: var(--code-bg); border-radius: 6px; padding: 8px 10px; overflow-wrap: anywhere; color: var(--fg); }
+.rows { display: grid; grid-template-columns: 120px 1fr; gap: 8px 16px; }
+.rows dt { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding-top: 3px; }
+.rows dd { margin: 0; min-width: 0; font-size: 0.94rem; }
+.rows dd ol, .rows dd ul { margin: 0; padding-left: 18px; }
+.meta { font-size: 0.8rem; color: var(--muted); }
+.empty { color: var(--muted); padding: 12px 0; }
+
+/* Commands */
+.cmds { display: flex; flex-direction: column; gap: 12px; }
+.cmd { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cmd-head { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.cmd-head p { color: var(--muted); font-size: 0.92rem; flex: 1 1 300px; min-width: 0; }
+pre.code { margin: 0; font-family: var(--font-mono); font-size: 0.82rem; background: var(--code-bg); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
+.copy { font: inherit; font-size: 0.8rem; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); cursor: pointer; }
+
+/* Open items */
+.open { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.open > div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.open p { color: var(--muted); font-size: 0.92rem; }
+
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 560px) {
+  h1 { font-size: 1.7rem; }
+  .rows { grid-template-columns: 1fr; gap: 2px; }
+  .rows dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="top">
+  <span class="eyebrow">NajotSoft CRM · yangilangan 2026-11-16</span>
+  <h1>Instagram ulash qo'llanmasi</h1>
+  <p class="lead">Instagram Direct'ni panelga ulashda 2026-yil 11–16-noyabrda duch kelingan har bir xato, uning sababi va yechimi. Mijozga ulash paytida biror narsa ishlamasa, avval pastdagi "Nima ko'ryapsiz?" jadvalidan belgini toping.</p>
+  <div class="facts">
+    <span class="fact">Meta ilova: <b>NajotSoft CRM</b></span>
+    <span class="fact">Webhook: <b>api.najotsoft.uz/webhooks/instagram</b></span>
+    <span class="fact">Sinalgan: <b>2026-11-16</b></span>
+  </div>
+</header>
+
+<section aria-labelledby="idx-h">
+  <div class="section-head">
+    <span class="eyebrow">Tez qidiruv</span>
+    <h2 id="idx-h">Nima ko'ryapsiz?</h2>
+  </div>
+  <div class="table-wrap">
+    <table class="index">
+      <thead><tr><th>Belgi</th><th>Qayerga qarash</th></tr></thead>
+      <tbody>
+        <tr><td>Panelda qizil <code>Failed to fetch</code></td><td><a href="#p-tunnel">Tunnel uzilishi</a></td></tr>
+        <tr><td>Izohlar keladi, Direct xabarlar kelmaydi</td><td><a href="#p-page">Sahifa obunasi yo'q</a></td></tr>
+        <tr><td>Hech qanday xabar kelmaydi, logda webhook yo'q</td><td><a href="#p-nothing">Meta umuman yubormayapti</a></td></tr>
+        <tr><td>Token oynasida <code>pages_manage_metadata</code>, <code>pages_messaging</code> yo'q</td><td><a href="#p-usecase">Messenger sценарийsi qo'shilmagan</a></td></tr>
+        <tr><td><code>You are not an admin of this app</code></td><td><a href="#p-admin">Noto'g'ri akkaunt yoki portfel</a></td></tr>
+        <tr><td>Sahifaga ruxsat saqlanmaydi, tugmalar kulrang</td><td><a href="#p-pageaccess">Sahifa ruxsati Instagram orqali</a></td></tr>
+        <tr><td>Javob ketmaydi: <code>not the thread owner</code></td><td><a href="#p-owner">Suhbat egasi Meta inbox</a></td></tr>
+        <tr><td>"Маршрутизация переписок" ro'yxati bo'sh</td><td><a href="#p-routing">Sahifa sozlamasidan qilish</a></td></tr>
+        <tr><td>Rasm ketmaydi: <code>(#100) Upload failed</code></td><td><a href="#p-upload">Fayl havolasi</a></td></tr>
+        <tr><td>xlsx, txt: <code>attachment format is not supported</code></td><td><a href="#p-format">Instagram cheklovi</a></td></tr>
+        <tr><td>"Direct ishladi" deb o'ylagansiz, keyin to'xtadi</td><td><a href="#p-comment">Izoh va Direct farqi</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="flow-h">
+  <div class="section-head">
+    <span class="eyebrow">Asos</span>
+    <h2 id="flow-h">Xabar qayerdan qayerga boradi</h2>
+    <p class="lead">Har bir xato shu zanjirning bitta bo'g'inida bo'ladi. Qaysi bo'g'inda uzilganini bilsangiz, yarim ish bitdi.</p>
+  </div>
+  <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  M["Mijoz<br/>Instagram"] -->|Direct xabar| META["Meta"]
+  META -->|"webhook (sahifa orqali)"| CF["Cloudflare tunnel<br/>api.najotsoft.uz"]
+  CF --> API["api"] --> W["worker"] --> P["Panel (Inbox)"]
+  P -->|javob| W2["worker"] -->|"Graph API /messages"| META
+  META -->|"faylni yuklab oladi<br/>/files/token/nom.ext"| CF
+  META --> M
+</pre>
+  </div>
+  <div class="flow-notes">
+    <div><h3>Kiruvchi</h3><p>Meta Direct xabarni Instagram akkauntga bog'langan <b>Facebook sahifa</b> orqali yuboradi. Ilova sahifaga obuna bo'lmasa, faqat izohlar keladi.</p></div>
+    <div><h3>Chiquvchi</h3><p>Javob faqat <b>suhbat egasi</b> bo'lgan ilovadan ketadi. Sahifada asosiy ilova NajotSoft CRM bo'lishi shart.</p></div>
+    <div><h3>Fayllar</h3><p>Fayl Meta'ga to'g'ridan-to'g'ri yuborilmaydi. Meta uni 15 daqiqalik havoladan o'zi yuklab oladi, shuning uchun tunnel ochiq bo'lishi kerak.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="setup-h">
+  <div class="section-head">
+    <span class="eyebrow">Har bir mijoz uchun</span>
+    <h2 id="setup-h">Ulash tartibi</h2>
+    <p class="lead">Tartib muhim: oldingi qadamsiz keyingisi ishlamaydi. Belgilar faqat sizning brauzeringizda saqlanadi.</p>
+  </div>
+  <div class="checklist-bar">
+    <span class="progress" id="progress">0 / 8 bajarildi</span>
+    <button class="copy" type="button" id="reset">Belgilarni tozalash</button>
+  </div>
+  <ol class="steps" id="steps">
+    <li class="step"><input type="checkbox" id="s1" aria-labelledby="s1-h"><div class="body">
+      <h3 id="s1-h">Server tayyor</h3>
+      <p>Tunnel http2 bilan ulangan va Mac uxlamaydi. Pastdagi "Server ishlayaptimi" buyrug'ini ishga tushiring: 4 ta <code>protocol=http2</code> ulanish va <code>api 200</code> chiqishi kerak.</p>
+    </div></li>
+    <li class="step"><input type="checkbox" id="s2" aria-labelledby="s2-h"><div class="body">
+      <h3 id="s2-h">Instagram akkaunt professional va sahifaga bog'langan</h3>
+      <p>Biznes yoki Creator akkaunt. Unga Facebook sahifa bog'langan bo'lishi kerak: Direct xabarlar shu sahifa orqali keladi.</p>
+    </div></li>
+    <li class="step"><input type="checkbox" id="s3" aria-labelledby="s3-h"><div class="body">
+      <h3 id="s3-h">App Review o'tmaguncha: akkaunt tester bo'lsin</h3>
+      <ul>
+        <li>developers.facebook.com → NajotSoft CRM → Роли в приложении → Добавить людей → <b>Тестировщик Instagram</b>.</li>
+        <li>Mijoz Instagram'da qabul qiladi: Settings and activity → Website permissions → Apps and websites → <b>Tester invites</b> → Accept.</li>
+        <li>Biz sinaganda xabar yozuvchi ham tester edi. Testersiz mijozdan xabar kelishi sinalmagan.</li>
+      </ul>
+    </div></li>
+    <li class="step"><input type="checkbox" id="s4" aria-labelledby="s4-h"><div class="body">
+      <h3 id="s4-h">Ilovada Messenger sценарийsi bor</h3>
+      <p>Bir marta qilinadi, 2026-11-16 da qilingan. developers.facebook.com → NajotSoft CRM → Сценарии использования ro'yxatida <b>«Взаимодействие с клиентами в Messenger»</b> turishi kerak, unda <code>pages_manage_metadata</code> va <code>pages_messaging</code> «Готово к тестированию» holatida.</p>
+    </div></li>
+    <li class="step"><input type="checkbox" id="s5" aria-labelledby="s5-h"><div class="body">
+      <h3 id="s5-h">Panelda ulash</h3>
+      <ul>
+        <li><b>Token bilan ulash</b> (sinalgan): system user token, 7 ta ruxsat bilan: <code>instagram_basic</code>, <code>instagram_manage_messages</code>, <code>instagram_manage_comments</code>, <code>pages_show_list</code>, <code>pages_manage_metadata</code>, <code>pages_messaging</code>, <code>business_management</code>. Token ilova admini bo'lgan <b>Facebook</b> akkaunt bilan yaratiladi.</li>
+        <li><b>Instagram orqali ulash</b> (OAuth) mijozlar uchun asosiy yo'l, lekin hali sinalmagan. Ishlatishdan oldin Facebook Login for Business → Конфигурации'da yuqoridagi 3 ta <code>pages_*</code> ruxsat konfiguratsiyada borligini tekshiring.</li>
+        <li>Ulangandan keyin panelda "Direct xabarlar kelmaydi" ogohlantirishi chiqmasligi kerak.</li>
+      </ul>
+    </div></li>
+    <li class="step"><input type="checkbox" id="s6" aria-labelledby="s6-h"><div class="body">
+      <h3 id="s6-h">Sahifada asosiy ilova = NajotSoft CRM</h3>
+      <p>facebook.com'da sahifaga o'tish → Настройки → Настройка Страницы → <b>«Маршрутизация переписки в Instagram»</b> → «Приложение для маршрутизации по умолчанию» → NajotSoft CRM. Buni sahifa egasi qiladi va u faqat 5-qadamdan keyin ro'yxatda chiqadi.</p>
+    </div></li>
+    <li class="step"><input type="checkbox" id="s7" aria-labelledby="s7-h"><div class="body">
+      <h3 id="s7-h">Instagram'da xabarlarga ruxsat</h3>
+      <p>Agar menyuda bo'lsa: Settings and activity → Messages and story replies → Message controls → Connected tools → <b>Allow access to messages</b> yoqilgan. Bizning sinovda bu bo'lim topilmadi, lekin xabarlar baribir keldi.</p>
+    </div></li>
+    <li class="step"><input type="checkbox" id="s8" aria-labelledby="s8-h"><div class="body">
+      <h3 id="s8-h">To'liq sinov</h3>
+      <ul>
+        <li>Tester akkauntdan Direct xabar yozing: panelda 1–2 soniyada chiqadi.</li>
+        <li>Paneldan javob yozing: Instagram'da ko'rinadi.</li>
+        <li>Paneldan rasm va PDF, Instagram'dan rasm va ovoz yuboring.</li>
+      </ul>
+    </div></li>
+  </ol>
+</section>
+
+<section aria-labelledby="prob-h">
+  <div class="section-head">
+    <span class="eyebrow">Topilgan xatolar</span>
+    <h2 id="prob-h">Muammo, sabab, yechim</h2>
+    <p class="lead">Har bir kartada: ekranda nima ko'rinadi, aslida nima bo'lgan, qanday tekshiriladi va qanday tuzatiladi.</p>
+  </div>
+  <div class="filter-row" role="group" aria-label="Filtr">
+    <label for="q" class="eyebrow" style="position:absolute;left:-9999px">Qidirish</label>
+    <input type="search" id="q" placeholder="Qidirish: thread owner, Upload failed, token…" autocomplete="off">
+    <button class="chip" type="button" data-kind="all" aria-pressed="true">Hammasi</button>
+    <button class="chip" type="button" data-kind="setting" aria-pressed="false">Meta sozlamasi</button>
+    <button class="chip" type="button" data-kind="code" aria-pressed="false">Kodda tuzatildi</button>
+    <button class="chip" type="button" data-kind="limit" aria-pressed="false">Cheklov</button>
+  </div>
+
+  <div class="cards" id="cards">
+
+    <article class="card" id="p-tunnel" data-kind="code">
+      <div class="card-head"><h3>Panelda "Failed to fetch", ulash tugmasi hech narsa qilmaydi</h3><span class="badge b-code">Kodda tuzatildi · 845af0a</span></div>
+      <div class="quote">Failed to fetch</div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>Cloudflare tunnel QUIC (UDP) orqali ulangan edi, bu tarmoqda u har necha daqiqada <code>failed to dial to edge with quic: timeout</code> bilan uzilardi. Brauzer so'rovi serverga yetmasdi, Meta webhook'lari ham yo'qolardi. 5 kunda 4945 ta tunnel xatosi bo'lgan.</dd>
+        <dt>Tekshirish</dt><dd>Bazada <code>channel.reconnected</code> yozuvi yo'q va api logida so'rov ko'rinmaydi: demak so'rov serverga umuman yetmagan. Tunnel logida <code>ERR</code> qatorlari ko'p bo'ladi.</dd>
+        <dt>Yechim</dt><dd><code>docker-compose.tunnel.yml</code> da cloudflared <code>--protocol http2</code> (TCP) bilan ishga tushadi. Mac uxlamasin: Energiya sozlamalari yoki <code>caffeinate -dis</code>.</dd>
+        <dt>Eslatma</dt><dd>Yangi kod o'rnatilganda (api qayta ishga tushganda) 5–10 soniya davomida ham "Failed to fetch" chiqadi. Bu vaqtinchalik: biroz kutib qayta urining.</dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-page" data-kind="setting">
+      <div class="card-head"><h3>Izohlar keladi, Direct xabarlar kelmaydi</h3><span class="badge b-setting">Meta sozlamasi</span></div>
+      <div class="quote">Direct xabarlar kelmaydi (izohlar keladi): Instagram'ga bog'langan Facebook sahifasiga ruxsat yo'q</div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>Meta Direct xabarlarni akkauntga bog'langan Facebook sahifa orqali yuboradi. Tokenda <code>pages_*</code> ruxsatlari bo'lmagani uchun ilova sahifaga obuna bo'lolmadi. Akkaunt obunasi bor edi, shuning uchun izohlar kelardi.</dd>
+        <dt>Tekshirish</dt><dd>
+          <ul>
+            <li>api logida: <code>Direct messages will not arrive (page=not shared)</code>.</li>
+            <li>Tokenni <a href="https://developers.facebook.com/tools/debug/accesstoken/" target="_blank" rel="noopener">Access Token Debugger</a>'ga joylang: Scopes ro'yxatida <code>pages_show_list</code>, <code>pages_manage_metadata</code>, <code>pages_messaging</code> bo'lishi kerak.</li>
+          </ul></dd>
+        <dt>Yechim</dt><dd>7 ta ruxsatli yangi token yarating (avval <a href="#p-usecase">Messenger sценарийsi</a> va <a href="#p-admin">admin akkaunt</a>) va panelda <b>Token bilan ulash</b>'ni qayta bosing. Kanal o'chmaydi, faqat tokeni almashadi va ilova sahifaga obuna bo'ladi.</dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-nothing" data-kind="setting">
+      <div class="card-head"><h3>Hech qanday xabar kelmaydi, logda webhook yo'q</h3><span class="badge b-setting">Bosqichma-bosqich tekshirish</span></div>
+      <dl class="rows">
+        <dt>Tartib</dt><dd>
+          <ol>
+            <li><b>Tunnel:</b> "Server ishlayaptimi" buyrug'i. Uzilgan bo'lsa → <a href="#p-tunnel">Tunnel uzilishi</a>.</li>
+            <li><b>Meta yubordimi:</b> har bir yetkazilgan webhook api logida <code>instagram webhook: 1 entry for &lt;akkaunt id&gt;</code> bo'lib chiqadi. Bu qator yo'q bo'lsa, Meta yubormagan.</li>
+            <li><b>Imzo:</b> <code>signature mismatch</code> chiqsa, so'rov Meta'dan emas yoki serverdagi <code>INSTAGRAM_APP_SECRET</code> ilovaniki emas.</li>
+            <li><b>Ilova webhook'i:</b> developers.facebook.com → NajotSoft CRM → Webhooks → Instagram: callback <code>https://api.najotsoft.uz/webhooks/instagram</code>, <code>messages</code> va <code>comments</code> maydonlariga obuna.</li>
+            <li><b>Sahifa obunasi:</b> <a href="#p-page">yuqoridagi karta</a>.</li>
+            <li><b>Tester:</b> App Review'gacha akkaunt tester bo'lishi va taklifni qabul qilgan bo'lishi kerak.</li>
+          </ol></dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-usecase" data-kind="setting">
+      <div class="card-head"><h3>Token oynasida pages_manage_metadata va pages_messaging yo'q</h3><span class="badge b-setting">Meta sozlamasi · bir marta</span></div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>"Instagram API" sценарийsida bu ikki ruxsat umuman yo'q: unda <code>pages</code> bilan boshlanadigan faqat <code>pages_show_list</code> va <code>pages_read_engagement</code> bor. Ruxsatlar ro'yxati alifbo tartibida, shuning uchun ular <code>pages_read_engagement</code> dan oldin bo'lishi kerak edi.</dd>
+        <dt>Yanglishmang</dt><dd>"Add required messaging permissions" tugmasi ham, "Расширьте функциональность…" (u Webhooks sahifasini ochadi) ham bu ruxsatlarni qo'shmaydi.</dd>
+        <dt>Yechim</dt><dd>developers.facebook.com → NajotSoft CRM → <b>Сценарии использования</b> → <b>Добавить сценарий использования</b> → <b>«Взаимодействие с клиентами в Messenger от Meta»</b>. Uning Разрешения bo'limida <code>pages_manage_metadata</code>, <code>pages_messaging</code> «Готово к тестированию» bo'ladi. Keyin token qayta yaratiladi.</dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-admin" data-kind="setting">
+      <div class="card-head"><h3>"You are not an admin of this app", ruxsatlar kam ko'rinadi</h3><span class="badge b-setting">Meta sozlamasi</span></div>
+      <div class="quote">You are not an admin of this app. You may see a limited set of permissions…</div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>business.facebook.com'ga <b>Instagram akkaunt</b> bilan kirilgan edi (o'ng yuqoridagi rasm Instagram belgisi). Ilova admini esa Facebook akkaunt. Ikkinchi xato: Facebook bilan kirgandan keyin boshqa biznes portfel ochilib qolgan.</dd>
+        <dt>Yechim</dt><dd>Ilova admini bo'lgan Facebook akkaunt bilan kiring. Chap yuqorida to'g'ri biznes portfel tanlanganini tekshiring, keyin Настройки → Пользователи → Системные пользователи → tizim foydalanuvchisi → Сгенерировать маркер.</dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-pageaccess" data-kind="setting">
+      <div class="card-head"><h3>Sahifaga ruxsat berib bo'lmaydi</h3><span class="badge b-setting">Kerak emas</span></div>
+      <div class="quote">There was a problem saving your changes. Please try again later. · Access managed in connected Instagram profile.</div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>NajotSoft sahifasiga kirish Instagram profil orqali boshqariladi. System user'da sahifa "Nothing assigned yet" ko'rinsa ham, Instagram akkauntga Full access berilgani yetadi.</dd>
+        <dt>Yechim</dt><dd>Oynani yoping. To'g'ri ruxsatli tokendan keyin Meta sahifani o'zi qaytardi (<code>/me/accounts</code> → NajotSoft) va obuna o'tdi. Asosiy muammo token ruxsatlarida edi.</dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-owner" data-kind="setting">
+      <div class="card-head"><h3>Xabar keladi, javob ketmaydi: not the thread owner</h3><span class="badge b-setting">Meta sozlamasi · har bir mijoz</span></div>
+      <div class="quote">Instagram so'rovni rad etdi: (#100) The action is invalid since it's not the thread owner.</div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>Sahifaning asosiy (default) ilovasi <b>Inbox in Meta Business Suite</b> edi. Bizning ilova xabarlarni kuzatuvchi sifatida (<code>standby</code>) olardi: o'qiy olardi, lekin javob yubora olmasdi.</dd>
+        <dt>Yechim</dt><dd>Sahifa sozlamasida asosiy ilovani NajotSoft CRM ga o'zgartiring (<a href="#s6-h">6-qadam</a>). Yo'li <a href="#p-routing">keyingi kartada</a>.</dd>
+        <dt>Muhim</dt><dd>Almashtirgandan keyin mijozdan <b>yangi xabar</b> kelishi kerak: eski suhbatni Meta inbox yana biroz ushlab turadi. Rad etilgan xabarlar avtomatik qayta yuborilmaydi.</dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-routing" data-kind="setting">
+      <div class="card-head"><h3>"Маршрутизация переписок" ro'yxati bo'sh</h3><span class="badge b-setting">Meta sozlamasi</span></div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>Biznes sozlamalaridagi umumiy ro'yxat (Настройки → Интеграции → Маршрутизация переписок) bizda bo'sh chiqdi, shuning uchun u yerdan o'zgartirib bo'lmadi.</dd>
+        <dt>Ishlagan yo'l</dt><dd>
+          <ol>
+            <li>facebook.com → profil rasmi → <b>Посмотреть все профили</b> → sahifani tanlang.</li>
+            <li>Настройки → qidiruvga <b>сообщ</b> deb yozing → <b>Расширенный обмен сообщениями</b>.</li>
+            <li>Настройка Страницы ro'yxatida <b>«Маршрутизация переписки в Instagram»</b>.</li>
+            <li>«Приложение для маршрутизации по умолчанию» → qatordagi tugma → <b>NajotSoft CRM</b>.</li>
+          </ol></dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-upload" data-kind="code">
+      <div class="card-head"><h3>Paneldan rasm ketmaydi: Upload failed</h3><span class="badge b-code">Kodda tuzatildi · 003814f</span></div>
+      <div class="quote">Instagram so'rovni rad etdi: (#100) Upload failed</div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>Meta faylni bizning havoladan o'zi yuklab oladi. Havola <code>/files/&lt;token&gt;</code> edi va token imzosi bilan tugardi (<code>…xxxx.yyyy</code>). Instagram oxirgi qismni fayl kengaytmasi deb o'qigan bo'lishi mumkin. Havola tashqaridan to'g'ri ochilardi (200, image/png), demak server emas, havola shakli sabab edi.</dd>
+        <dt>Yechim</dt><dd>Havola endi <code>/files/&lt;token&gt;/fayl-nomi.png</code>. Nom faqat bezak: faylni token belgilaydi.</dd>
+        <dt>Tekshirish</dt><dd>Har bir yuklab olish api logida chiqadi: <code>file link served: image/png 617060 B GET ua=facebookexternalhit/1.1</code>. Bu qator bo'lmasa, Meta havolaga yetib kelmagan (tunnelni tekshiring).</dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-format" data-kind="limit">
+      <div class="card-head"><h3>xlsx, txt va boshqa fayllar ketmaydi</h3><span class="badge b-limit">Instagram cheklovi · 43cd921</span></div>
+      <div class="quote">(#100) This attachment format is not supported.</div>
+      <dl class="rows">
+        <dt>Sabab</dt><dd>Instagram Direct faqat rasm, video, audio va PDF qabul qiladi. Bu Meta qoidasi, aylanib o'tib bo'lmaydi.</dd>
+        <dt>Endi</dt><dd>Panel bunday faylni oldindan to'xtatadi: "Instagram Direct faqat rasm, video, audio va PDF fayl qabul qiladi". Avval xabarning matn qismi ketib, fayl rad etilardi va panel butun xabarni "Yuborilmadi" deb ko'rsatardi.</dd>
+        <dt>Mijozga</dt><dd>Jadval yoki hujjatni PDF qilib yuboring.</dd>
+      </dl>
+    </article>
+
+    <article class="card" id="p-comment" data-kind="setting">
+      <div class="card-head"><h3>Direct ishladi deb o'ylash: aslida izoh edi</h3><span class="badge b-setting">Kuzatish xatosi</span></div>
+      <dl class="rows">
+        <dt>Nima bo'ldi</dt><dd>12-noyabrda kelgan "narxi qancha" xabari Direct deb hisoblandi va "Direct bir marta ishlagan" degan xulosa chiqdi. Aslida u post ostidagi izoh edi, birinchi haqiqiy Direct faqat 16-noyabrda keldi.</dd>
+        <dt>Qanday farqlash</dt><dd>Panelda izoh ustida <b>"Post ostidagi izoh"</b> yozuvi bo'ladi. Sinovda Direct'ni har doim Instagram'ning Direct oynasidan yozing.</dd>
+      </dl>
+    </article>
+
+    <p class="empty" id="empty" hidden>Bu qidiruvga mos karta yo'q.</p>
+  </div>
+</section>
+
+<section aria-labelledby="cmd-h">
+  <div class="section-head">
+    <span class="eyebrow">Diagnostika</span>
+    <h2 id="cmd-h">Tekshirish buyruqlari</h2>
+    <p class="lead">Mac terminalida, loyiha papkasida (<code>~/Projects/sotuvchi-ai</code>) ishga tushiriladi. Hech biri token yoki parolni ekranga chiqarmaydi.</p>
+  </div>
+  <div class="cmds">
+    <div class="cmd">
+      <div class="cmd-head"><p><b>Server ishlayaptimi.</b> Konteynerlar holati, tunnel protokoli va api javobi.</p><button class="copy" type="button" data-copy="c1">Nusxalash</button></div>
+<pre class="code" id="c1">docker compose -p sotuvchi-tunnel ps
+docker logs sotuvchi-tunnel-tunnel-1 2&gt;&amp;1 | grep -E "Registered|ERR" | tail -6
+curl -s -o /dev/null -w 'api %{http_code}\n' https://api.najotsoft.uz/health</pre>
+    </div>
+    <div class="cmd">
+      <div class="cmd-head"><p><b>Meta nima yuboryapti.</b> Webhook'lar, fayl yuklab olishlar, ulash ogohlantirishlari.</p><button class="copy" type="button" data-copy="c2">Nusxalash</button></div>
+<pre class="code" id="c2">docker logs --since 1h sotuvchi-tunnel-api-1 2&gt;&amp;1 \
+  | grep -E "instagram webhook|file link|Direct messages will not arrive|Instagram token|signature" \
+  | tail -20</pre>
+    </div>
+    <div class="cmd">
+      <div class="cmd-head"><p><b>Nega yuborilmadi.</b> Worker'ning chiquvchi xabar xatolari.</p><button class="copy" type="button" data-copy="c3">Nusxalash</button></div>
+<pre class="code" id="c3">docker logs --since 1h sotuvchi-tunnel-worker-1 2&gt;&amp;1 | grep -iE "outbound|failed" | tail -10</pre>
+    </div>
+    <div class="cmd">
+      <div class="cmd-head"><p><b>Bazada nima bor.</b> Oxirgi Instagram xabarlari va kanal ulanishlari.</p><button class="copy" type="button" data-copy="c4">Nusxalash</button></div>
+<pre class="code" id="c4">docker compose -p sotuvchi-tunnel exec -T postgres psql -U sotuvchi -d sotuvchi -c "
+select m.direction, m.created_at, m.status, left(m.text, 40) as text
+from messages m join channels c on c.id = m.channel_id
+where c.type = 'instagram' order by m.created_at desc limit 10;"
+docker compose -p sotuvchi-tunnel exec -T postgres psql -U sotuvchi -d sotuvchi -c "
+select action, created_at from audit_log where action like 'channel.%' order by created_at desc limit 5;"</pre>
+    </div>
+    <div class="cmd">
+      <div class="cmd-head"><p><b>Yangi kodni o'rnatish.</b> api va worker'ni qayta yig'adi. 5–10 soniya panel javob bermaydi.</p><button class="copy" type="button" data-copy="c5">Nusxalash</button></div>
+<pre class="code" id="c5">docker compose -f docker-compose.prod.yml -f docker-compose.tunnel.yml \
+  --env-file .env --env-file .env.tunnel up -d --build api worker</pre>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="open-h">
+  <div class="section-head">
+    <span class="eyebrow">Hali ochiq</span>
+    <h2 id="open-h">Sinalmagan narsalar</h2>
+  </div>
+  <div class="open">
+    <div><h3>Instagram orqali ulash</h3><p>Mijozlar uchun asosiy yo'l (OAuth). Konfiguratsiyada <code>pages_*</code> ruxsatlari borligi va oqim oxirigacha ishlashi tekshirilmagan.</p><span><span class="badge b-untested">Sinalmagan</span></span></div>
+    <div><h3>Video</h3><p>Ikki yo'nalishda ham hali yuborilmagan.</p><span><span class="badge b-untested">Sinalmagan</span></span></div>
+    <div><h3>Izohga javob</h3><p>Post ostidagi izohga paneldan shaxsiy javob (7 kun ichida, bir marta, faqat matn).</p><span><span class="badge b-untested">Sinalmagan</span></span></div>
+    <div><h3>Tester bo'lmagan mijozlar</h3><p>App Review o'tmaguncha oddiy mijozlardan xabar kelishi kafolatlanmagan. App Review uchun to'liq jarayon videoga olinadi.</p><span><span class="badge b-untested">App Review kerak</span></span></div>
+    <div><h3>Sinalgan va ishlaydi</h3><p>Direct matn ikki tomonga, AI javobi, kiruvchi rasm va ovoz, chiquvchi rasm, audio va PDF.</p><span><span class="badge b-tested">2026-11-16</span></span></div>
+  </div>
+</section>
+
+<footer>Batafsil texnik hujjat: <code>docs/integrations/instagram.md</code> va <code>docs/deploy/tunnel.md</code> (repo). Commitlar: 48801d5, 845af0a, 003814f, 43cd921 · PR #15.</footer>
+</div>
+
+<script>
+(function () {
+  // Checklist: remembered per browser only; works without storage too.
+  var KEY = 'ig-ulash-steps';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#steps input[type="checkbox"]'));
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
+  function render() {
+    var done = 0;
+    boxes.forEach(function (b) { b.closest('.step').classList.toggle('done', b.checked); if (b.checked) done++; });
+    document.getElementById('progress').textContent = done + ' / ' + boxes.length + ' bajarildi';
+  }
+  function store() {
+    var s = {}; boxes.forEach(function (b) { s[b.id] = b.checked; });
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+  }
+  boxes.forEach(function (b) {
+    b.checked = !!saved[b.id];
+    b.addEventListener('change', function () { render(); store(); });
+  });
+  document.getElementById('reset').addEventListener('click', function () {
+    boxes.forEach(function (b) { b.checked = false; }); render(); store();
+  });
+  render();
+
+  // Problem filter: text search plus a kind chip.
+  var q = document.getElementById('q');
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card'));
+  var kind = 'all';
+  function filter() {
+    var term = q.value.trim().toLowerCase();
+    var shown = 0;
+    cards.forEach(function (c) {
+      var ok = (kind === 'all' || c.dataset.kind === kind) && (!term || c.textContent.toLowerCase().indexOf(term) !== -1);
+      c.hidden = !ok; if (ok) shown++;
+    });
+    document.getElementById('empty').hidden = shown !== 0;
+  }
+  q.addEventListener('input', filter);
+  chips.forEach(function (ch) {
+    ch.addEventListener('click', function () {
+      kind = ch.dataset.kind;
+      chips.forEach(function (o) { o.setAttribute('aria-pressed', String(o === ch)); });
+      filter();
+    });
+  });
+  // Index links must reach a card even when a filter hides it.
+  document.querySelectorAll('.index a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      q.value = ''; kind = 'all';
+      chips.forEach(function (o) { o.setAttribute('aria-pressed', String(o.dataset.kind === 'all')); });
+      filter();
+    });
+  });
+
+  // Copy buttons.
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = document.getElementById(btn.dataset.copy);
+      var text = pre.textContent;
+      function done(label) { btn.textContent = label; setTimeout(function () { btn.textContent = 'Nusxalash'; }, 1500); }
+      function select() {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        done('Belgilandi: ⌘C');
+      }
+      try {
+        navigator.clipboard.writeText(text).then(function () { done('Nusxalandi'); }, select);
+      } catch (e) { select(); }
+    });
+  });
+})();
+</script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs';
+  const dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'neutral', securityLevel: 'strict' });
+</script>
+</body>
+</html>
